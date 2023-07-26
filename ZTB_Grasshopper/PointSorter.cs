@@ -33,8 +33,10 @@ namespace ZTB_Grasshopper
             pManager.AddTextParameter("First coordinate", "FC", "First coordinate to sort", GH_ParamAccess.item);
             pManager.AddTextParameter("Second coordinate", "SC", "Second coordinate to sort", GH_ParamAccess.item);
             pManager.AddTextParameter("Third coordinate", "TC", "Third coordinate to sort", GH_ParamAccess.item);
+            pManager.AddBooleanParameter("Sort ascending", "SC", "Sort ascending", GH_ParamAccess.item);
             pManager[2].Optional = true;
             pManager[3].Optional = true;
+            pManager[4].Optional = true;
         }
 
         /// <summary>
@@ -60,6 +62,9 @@ namespace ZTB_Grasshopper
             DA.GetData(1, ref firstCoordinate);
             DA.GetData(2, ref secondCoordinate);
             DA.GetData(3, ref thirdCoordinate);
+            bool sortAsceding = true;
+            DA.GetData(4, ref sortAsceding);
+
 
             Point3d point3D = new Point3d();
             List<Point3d> sortedPoints = new List<Point3d>();
@@ -71,16 +76,37 @@ namespace ZTB_Grasshopper
                 if (thirdCoordinate != string.Empty)
                 {
                     var thirdPropertyInfo = point3D.GetType().GetProperty(thirdCoordinate);
-                    sortedPoints = points.OrderBy(p => firstPropertyInfo.GetValue(p, null)).ThenBy(p => secondPropertyInfo.GetValue(p, null)).ThenBy(p => thirdPropertyInfo.GetValue(p, null)).ToList();
+                    if (sortAsceding)
+                    {
+                        sortedPoints = points.OrderBy(p => firstPropertyInfo.GetValue(p, null)).ThenBy(p => secondPropertyInfo.GetValue(p, null)).ThenBy(p => thirdPropertyInfo.GetValue(p, null)).ToList();
+                    }
+                    else
+                    {
+                        sortedPoints = points.OrderByDescending(p => firstPropertyInfo.GetValue(p, null)).ThenBy(p => secondPropertyInfo.GetValue(p, null)).ThenBy(p => thirdPropertyInfo.GetValue(p, null)).ToList();
+                    }
                 }
                 else
                 {
-                    sortedPoints = points.OrderBy(p => firstPropertyInfo.GetValue(p, null)).ThenBy(p => secondPropertyInfo.GetValue(p, null)).ToList();
+                    if (sortAsceding)
+                    {
+                        sortedPoints = points.OrderBy(p => firstPropertyInfo.GetValue(p, null)).ThenBy(p => secondPropertyInfo.GetValue(p, null)).ToList();
+                    }
+                    else
+                    {
+                        sortedPoints = points.OrderByDescending(p => firstPropertyInfo.GetValue(p, null)).ThenBy(p => secondPropertyInfo.GetValue(p, null)).ToList();
+                    }
                 }
             }
             else
             {
-                sortedPoints = points.OrderBy(p => firstPropertyInfo.GetValue(p)).ToList();
+                if (sortAsceding)
+                {
+                    sortedPoints = points.OrderBy(p => firstPropertyInfo.GetValue(p)).ToList();
+                }
+                else
+                {
+                    sortedPoints = points.OrderByDescending(p => firstPropertyInfo.GetValue(p)).ToList();
+                }
             }
 
             DA.SetDataList(0, sortedPoints);

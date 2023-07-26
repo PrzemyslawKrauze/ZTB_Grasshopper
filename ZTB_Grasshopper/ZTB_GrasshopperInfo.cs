@@ -7,7 +7,7 @@ namespace ZTB_Grasshopper
 {
     public class ZTB_GrasshopperInfo : GH_AssemblyInfo
     {
-        public override string Name => "PointSorter";
+        public override string Name => "ZTB";
 
         //Return a 24x24 pixel bitmap to represent this GHA library.
         public override Bitmap Icon => null;
